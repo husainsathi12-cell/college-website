@@ -90,3 +90,47 @@ main .photos img:hover,main .two img:hover,main .campus-life-main:hover,main .co
   [data-theme=dark] body:not(.home) .hd #nav a:not(.btn){color:var(--t)}
   #nav a[aria-current]{box-shadow:inset 0 -3px var(--g)}
 }
+
+
+/* Moving admissions announcement and dependable reveal animations */
+.top .c{overflow:hidden}
+.admission-marquee{
+  display:block;
+  flex:0 0 100%;
+  width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  margin:4px 0;
+  padding:5px 0;
+  border-radius:6px;
+  background:var(--g);
+  color:var(--d);
+  font-weight:800;
+  letter-spacing:.045em;
+  text-align:left;
+}
+.admission-marquee span{
+  display:inline-block;
+  min-width:max-content;
+  padding-left:100%;
+  animation:admission-scroll 18s linear infinite;
+}
+@keyframes admission-scroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+@media(min-width:900px){
+  .top .c{flex-wrap:nowrap;align-items:center}
+  .admission-marquee{flex:1 1 42%;width:auto;margin:0 0 0 auto;padding:4px 0}
+  .admission-marquee span{padding-left:100%;animation-duration:22s}
+}
+@media(prefers-reduced-motion:reduce){
+  .admission-marquee span{animation-duration:45s}
+}
+/* Ensure content remains visible if an observer fails or loads late */
+.motion-ready{will-change:opacity,transform}
+.motion-ready.motion-in{opacity:1;transform:translateY(0)}
+@media(max-width:899px){
+  .top .c{display:block}
+  .top .c>span{display:none!important}
+}
