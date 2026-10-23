@@ -77,3 +77,27 @@ lb.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')show(cur-1);if(
     addImage(target,context,true);
   });
 })();
+
+/* Site-wide motion: reveal sections/cards as they enter view, with safe fallbacks. */
+(function(){
+  try {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var targets = document.querySelectorAll('main .sec, main .card, main .two > img, main .photos img, main .campus-life-main, main .course-photo, main .notice-photo');
+    if (!targets.length) return;
+    targets.forEach(function(el){ el.classList.add('motion-ready'); });
+    if (!('IntersectionObserver' in window)) {
+      targets.forEach(function(el){ el.classList.add('motion-in'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('motion-in');
+        observer.unobserve(entry.target);
+      });
+    }, {threshold: 0.12, rootMargin: '0px 0px -24px 0px'});
+    targets.forEach(function(el){ observer.observe(el); });
+  } catch (e) {
+    document.querySelectorAll('.motion-ready').forEach(function(el){el.classList.add('motion-in');});
+  }
+})();
