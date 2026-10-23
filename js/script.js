@@ -27,3 +27,49 @@ $$('.gi').forEach(function(g){g.addEventListener('click',function(){show(vis().i
 lb.addEventListener('click',function(e){var a=e.target.dataset.a;if(a==='x'||e.target===lb)lb.close();if(a==='p')show(cur-1);if(a==='n')show(cur+1)});
 lb.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')show(cur-1);if(e.key==='ArrowRight')show(cur+1)})}
 })();
+
+/* Animated homepage statistics and image support for visually empty cards. */
+(function(){
+  var stats=document.querySelectorAll('.stats .grid b');
+  if(stats.length && 'IntersectionObserver' in window){
+    stats.forEach(function(el){
+      var original=el.textContent.trim();
+      var match=original.match(/^([\d,]+)(.*)$/);
+      if(!match)return;
+      var target=parseInt(match[1].replace(/,/g,''),10), suffix=match[2]||'';
+      if(!Number.isFinite(target))return;
+      el.dataset.final=original;
+      el.textContent='0'+suffix;
+      var observer=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(!entry.isIntersecting)return;
+          var start=null,duration=1300;
+          function tick(now){
+            if(!start)start=now;
+            var p=Math.min((now-start)/duration,1);
+            var eased=1-Math.pow(1-p,3);
+            el.textContent=Math.round(target*eased).toLocaleString('en-US')+suffix;
+            if(p<1)requestAnimationFrame(tick);else el.textContent=original;
+          }
+          requestAnimationFrame(tick);observer.unobserve(el);
+        });
+      },{threshold:.35});
+      observer.observe(el);
+    });
+  }
+  var imageMap=[
+    {keys:/librar|book|reading/i,src:'images/gallery/academics-library.svg',alt:'College library'},
+    {keys:/computer|technology|coding|digital|lab|science/i,src:'images/gallery/academics-computer-lab.svg',alt:'College computer lab'},
+    {keys:/class|lecture|faculty|teacher|academic|course|program|student/i,src:'images/gallery/academics-classroom.svg',alt:'College classroom'}
+  ];
+  document.querySelectorAll('.card').forEach(function(card){
+    if(card.querySelector('img'))return;
+    var heading=card.querySelector('h2,h3,h4');
+    var text=(heading?heading.textContent+' ':'')+card.textContent;
+    var chosen=imageMap.find(function(item){return item.keys.test(text)});
+    if(!chosen)chosen={src:'images/about.svg',alt:'College campus'};
+    var img=document.createElement('img');
+    img.src=chosen.src;img.alt=chosen.alt;img.loading='lazy';img.className='card-visual';
+    card.insertBefore(img,card.firstChild);
+  });
+})();
