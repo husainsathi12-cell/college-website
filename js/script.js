@@ -28,48 +28,52 @@ lb.addEventListener('click',function(e){var a=e.target.dataset.a;if(a==='x'||e.t
 lb.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')show(cur-1);if(e.key==='ArrowRight')show(cur+1)})}
 })();
 
-/* Animated homepage statistics and image support for visually empty cards. */
+/* Animated homepage stats and real photographic imagery across content sections. */
 (function(){
   var stats=document.querySelectorAll('.stats .grid b');
   if(stats.length && 'IntersectionObserver' in window){
     stats.forEach(function(el){
-      var original=el.textContent.trim();
-      var match=original.match(/^([\d,]+)(.*)$/);
+      var original=el.textContent.trim(),match=original.match(/^([\\d,]+)(.*)$/);
       if(!match)return;
-      var target=parseInt(match[1].replace(/,/g,''),10), suffix=match[2]||'';
+      var target=parseInt(match[1].replace(/,/g,''),10),suffix=match[2]||'';
       if(!Number.isFinite(target))return;
-      el.dataset.final=original;
       el.textContent='0'+suffix;
       var observer=new IntersectionObserver(function(entries){
         entries.forEach(function(entry){
           if(!entry.isIntersecting)return;
-          var start=null,duration=1300;
-          function tick(now){
-            if(!start)start=now;
-            var p=Math.min((now-start)/duration,1);
-            var eased=1-Math.pow(1-p,3);
-            el.textContent=Math.round(target*eased).toLocaleString('en-US')+suffix;
-            if(p<1)requestAnimationFrame(tick);else el.textContent=original;
-          }
+          var start=null,duration=1400;
+          function tick(now){if(!start)start=now;var p=Math.min((now-start)/duration,1),eased=1-Math.pow(1-p,3);el.textContent=Math.round(target*eased).toLocaleString('en-US')+suffix;if(p<1)requestAnimationFrame(tick);else el.textContent=original;}
           requestAnimationFrame(tick);observer.unobserve(el);
         });
-      },{threshold:.35});
-      observer.observe(el);
+      },{threshold:.35});observer.observe(el);
     });
   }
-  var imageMap=[
-    {keys:/librar|book|reading/i,src:'images/gallery/academics-library.svg',alt:'College library'},
-    {keys:/computer|technology|coding|digital|lab|science/i,src:'images/gallery/academics-computer-lab.svg',alt:'College computer lab'},
-    {keys:/class|lecture|faculty|teacher|academic|course|program|student/i,src:'images/gallery/academics-classroom.svg',alt:'College classroom'}
+  var photos=[
+    {keys:/librar|book|reading/i,url:'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1000&q=80',alt:'College library and books'},
+    {keys:/computer|technology|coding|digital|lab|science|physics|chemistry/i,url:'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1000&q=80',alt:'Students learning in a laboratory'},
+    {keys:/class|lecture|faculty|teacher|academic|course|program|student|education/i,url:'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1000&q=80',alt:'University students on campus'},
+    {keys:/sport|cricket|basketball|fitness|ground/i,url:'https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=1000&q=80',alt:'College sports and activities'},
+    {keys:/event|fest|culture|orientation|notice|announcement/i,url:'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1000&q=80',alt:'Students at a campus event'},
+    {keys:/contact|map|location|campus|building|environment|vision|mission|about|philosophy/i,url:'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1200&q=80',alt:'College campus building'}
   ];
+  function addImage(container,context,sectionMode){
+    if(container.querySelector(':scope > .card-visual, :scope > img'))return;
+    var chosen=photos.find(function(p){return p.keys.test(context)});
+    if(!chosen)chosen=photos[5];
+    var img=document.createElement('img');img.src=chosen.url;img.alt=chosen.alt;img.loading='lazy';img.className='card-visual';
+    if(sectionMode){var heading=container.querySelector('h2,h3');if(heading&&heading.nextSibling)heading.parentNode.insertBefore(img,heading.nextSibling);else container.insertBefore(img,container.firstChild);}
+    else container.insertBefore(img,container.firstChild);
+  }
   document.querySelectorAll('.card').forEach(function(card){
     if(card.querySelector('img'))return;
-    var heading=card.querySelector('h2,h3,h4');
-    var text=(heading?heading.textContent+' ':'')+card.textContent;
-    var chosen=imageMap.find(function(item){return item.keys.test(text)});
-    if(!chosen)chosen={src:'images/about.svg',alt:'College campus'};
-    var img=document.createElement('img');
-    img.src=chosen.src;img.alt=chosen.alt;img.loading='lazy';img.className='card-visual';
-    card.insertBefore(img,card.firstChild);
+    addImage(card,card.textContent,false);
+  });
+  document.querySelectorAll('main .sec').forEach(function(section){
+    if(section.querySelector('img, .photos, .map, form, .gi'))return;
+    var heading=section.querySelector('h2,h3');
+    if(!heading)return;
+    var context=heading.textContent+' '+section.textContent;
+    var target=section.querySelector('.c')||section;
+    addImage(target,context,true);
   });
 })();
