@@ -81,7 +81,7 @@ lb.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')show(cur-1);if(
 /* Site-wide motion: reveal sections/cards as they enter view, with safe fallbacks. */
 (function(){
   try {
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { document.querySelectorAll('main .sec, main .card, main .two > img, main .photos img, main .campus-life-main, main .course-photo, main .notice-photo').forEach(function(el){el.classList.add('motion-in');}); return; }
     var targets = document.querySelectorAll('main .sec, main .card, main .two > img, main .photos img, main .campus-life-main, main .course-photo, main .notice-photo');
     if (!targets.length) return;
     targets.forEach(function(el){ el.classList.add('motion-ready'); });
