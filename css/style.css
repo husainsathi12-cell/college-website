@@ -45,3 +45,12 @@ body.home .hd{margin-bottom:-65px;background:transparent;border-color:transparen
 [hidden]{display:none!important}
 @media(min-width:900px){.top span:nth-child(n+2){display:inline}.mb{display:none}#nav{order:2;margin-left:auto}.th{order:3;margin-left:0}#nav{display:flex;position:static;flex-direction:row;align-items:center;padding:0;border:0;gap:2px}#nav a{padding:8px 10px;font-size:.92rem}#nav .btn{margin-left:8px;padding:8px 16px;min-height:40px}.brand{font-size:.9rem;max-width:280px}.two{grid-template-columns:1fr 1fr}.two.rev>:first-child{order:2}}
 @media(prefers-reduced-motion:reduce){.in>*{animation:none!important}*{transition:none!important;scroll-behavior:auto!important}}
+
+/* Compact theme toggle and consistent card imagery */
+.th{width:34px;height:34px;min-width:34px;padding:0;border-radius:7px}
+.th svg{width:18px;height:18px}
+@media(max-width:599px){.th{width:32px;height:32px;min-width:32px}.th svg{width:17px;height:17px}}
+.card-visual{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:6px;margin:0 0 16px}
+.card:has(.card-visual){overflow:hidden}
+.card .card-visual:first-child{margin-top:0}
+@media(prefers-reduced-motion:reduce){.stats .grid b{animation:none!important}}
